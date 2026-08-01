@@ -15,12 +15,16 @@ func main() {
 	// Middlewares for specific rate limiting strategies
 	bucketMiddleware := service.BucketRateLimiter
 	perClientMiddleware := service.PerClientRateLimiter
+	tollboothMiddleware := service.TollboothRateLimiter
 
 	// Impl Token Bucket
 	http.Handle("/ping/bucket", bucketMiddleware(handler))
 
 	// Impl Per-Client Limiting
 	http.Handle("/ping/per-client", perClientMiddleware(handler))
+
+	// Impl Tollbooth Limiting
+	http.Handle("/ping/tollbooth", tollboothMiddleware(handler))
 	
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

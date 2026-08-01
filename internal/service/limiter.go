@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"golang.org/x/time/rate"
+	tollbooth "github.com/didip/tollbooth/v7"
 )
 
 type Message struct {
@@ -104,4 +105,18 @@ func PerClientRateLimiter(next func(writer http.ResponseWriter, request *http.Re
 		mu.Unlock()
 		next(w, r)
 	})
+}
+
+func TollboothRateLimiter(next func(writer http.ResponseWriter, request *http.Request)) http.Handler {
+	message := Message{
+		Status: "Request Failed",
+		Body:   "The API is at capacity, try again later.",
+	}
+	jsonMessage, _ := json.Marshal(message)
+
+	tlbthLimiter := tollbooth.NewLimiter(1, nil)
+	tlbthLimiter.SetMessageContentType("application/json")
+	tlbthLimiter.SetMessage(string(jsonMessage))
+	
+	return tollbooth.LimitFuncHandler(tlbthLimiter, next)
 }
