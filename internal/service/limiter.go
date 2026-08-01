@@ -114,7 +114,7 @@ func TollboothRateLimiter(next func(writer http.ResponseWriter, request *http.Re
 	}
 	jsonMessage, _ := json.Marshal(message)
 
-	tlbthLimiter := tollbooth.NewLimiter(1, nil)
+	tlbthLimiter := tollbooth.NewLimiter(4, nil)
 	tlbthLimiter.SetMessageContentType("application/json")
 	tlbthLimiter.SetMessage(string(jsonMessage))
 	
